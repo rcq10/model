@@ -2,80 +2,123 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecionando para o WhatsApp...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bianca Oliveira - WhatsApp</title>
   <style>
     body {
-      background-color: #075E54;
-      color: #FFFFFF;
-      font-family: 'Segoe UI', 'Roboto', sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #e5ddd5;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      padding: 20px;
+      max-width: 400px;
+      width: 90%;
       text-align: center;
+      position: relative;
     }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+    .profile {
+      position: relative;
+      display: inline-block;
     }
-    .contador {
-      font-size: 3rem;
-      font-weight: bold;
-      color: #25D366;
-      margin-top: 20px;
+    .profile img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #25D366;
     }
-    .check {
-      font-size: 4rem;
-      color: #25D366;
-      display: none;
+    .online-indicator {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 20px;
+      height: 20px;
+      background-color: #25D366;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+    }
+    h2 {
+      margin: 15px 0 5px 0;
+      color: #075E54;
+    }
+    p {
+      margin: 5px 0;
+      color: #555;
+      font-size: 15px;
+    }
+    .btn-whatsapp {
+      display: inline-block;
+      background-color: #25D366;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-whatsapp:hover {
+      background-color: #128C7E;
+    }
+    @media (max-width: 480px) {
+      .profile img {
+        width: 100px;
+        height: 100px;
+      }
+      .online-indicator {
+        width: 16px;
+        height: 16px;
+        bottom: 3px;
+        right: 3px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Parabéns pelo acesso!</h1>
-  <p>Você terá acesso as modelos mais quentes em...</p>
-  <div class="contador" id="contador">3</div>
-  <div class="check" id="check">✔</div>
+
+  <div class="container">
+    <div class="profile">
+      <img src="https://i.ibb.co/Q732h5xv/Captura-de-tela-2025-06-02-201808.png" alt="Bianca Oliveira">
+      <div class="online-indicator"></div>
+    </div>
+
+    <h2>Bianca Oliveira</h2>
+    <p>22 anos</p>
+    <p>Bahia / São Paulo</p>
+
+    <button class="btn-whatsapp" onclick="redirecionarWhatsApp()">Falar no WhatsApp</button>
+  </div>
 
   <script>
-    // Lista de números de WhatsApp (sem "+" e espaços)
-    const numeros = [
-      '5573988023534',
+    const numerosWhatsApp = [
+      
+    '5573988023534',  // Número 1
+     
+      
+      
       
     ];
 
-    // Recupera o índice atual salvo no navegador (ou começa do 0)
-    let indice = localStorage.getItem('indiceNumero');
-    indice = indice ? parseInt(indice) : 0;
-
-    // Define o próximo número e salva o novo índice
-    const numeroAtual = numeros[indice];
-    const proximoIndice = (indice + 1) % numeros.length;
-    localStorage.setItem('indiceNumero', proximoIndice);
-
-    // Monta o link do WhatsApp
-    const link = `https://wa.me/${numeroAtual}`;
-
-    // Inicia o contador regressivo
-    let segundos = 3;
-    const contador = document.getElementById("contador");
-    const check = document.getElementById("check");
-
-    const interval = setInterval(() => {
-      segundos--;
-      if (segundos > 0) {
-        contador.textContent = segundos;
-      } else {
-        clearInterval(interval);
-        contador.style.display = "none";
-        check.style.display = "block";
-        setTimeout(() => {
-          window.location.href = link;
-        }, 1000);
-      }
-    }, 1000);
+    function redirecionarWhatsApp() {
+      const index = Math.floor(Math.random() * numerosWhatsApp.length);
+      const numero = numerosWhatsApp[index];
+      const mensagem = encodeURIComponent("Olá, Amor! Como tenho acesso ao seu conteudo.");
+      const link = `https://wa.me/${numero}?text=${mensagem}`;
+      window.location.href = link;
+    }
   </script>
+
 </body>
 </html>
