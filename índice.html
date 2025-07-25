@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecionando para o WhatsApp...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #075E54;
+      color: #FFFFFF;
+      font-family: 'Segoe UI', 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .contador {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #25D366;
+      margin-top: 20px;
+    }
+    .check {
+      font-size: 4rem;
+      color: #25D366;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Parabéns pelo acesso!</h1>
+  <p>Você terá acesso as modelos mais quentes em...</p>
+  <div class="contador" id="contador">3</div>
+  <div class="check" id="check">✔</div>
+
+  <script>
+    // Lista de números de WhatsApp (sem "+" e espaços)
+    const numeros = [
+      '5573988023534',
+      
+    ];
+
+    // Recupera o índice atual salvo no navegador (ou começa do 0)
+    let indice = localStorage.getItem('indiceNumero');
+    indice = indice ? parseInt(indice) : 0;
+
+    // Define o próximo número e salva o novo índice
+    const numeroAtual = numeros[indice];
+    const proximoIndice = (indice + 1) % numeros.length;
+    localStorage.setItem('indiceNumero', proximoIndice);
+
+    // Monta o link do WhatsApp
+    const link = `https://wa.me/${numeroAtual}`;
+
+    // Inicia o contador regressivo
+    let segundos = 3;
+    const contador = document.getElementById("contador");
+    const check = document.getElementById("check");
+
+    const interval = setInterval(() => {
+      segundos--;
+      if (segundos > 0) {
+        contador.textContent = segundos;
+      } else {
+        clearInterval(interval);
+        contador.style.display = "none";
+        check.style.display = "block";
+        setTimeout(() => {
+          window.location.href = link;
+        }, 1000);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
