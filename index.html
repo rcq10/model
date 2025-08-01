@@ -1,31 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
- <!-- Meta Pixel Code -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-
-  fbq('init', '1288649356154285');
-  fbq('track', 'Purchase', {
-    value: 1.00, // valor da compra
-    currency: 'BRL' // moeda
-  });
-</script>
-
-<noscript>
-  <img height="1" width="1" style="display:none"
-       src="https://www.facebook.com/tr?id=1288649356154285&ev=Purchase&cd[value]=1.00&cd[currency]=BRL&noscript=1"/>
-</noscript>
-<!-- End Meta Pixel Code -->
-
-
   <meta charset="UTF-8">
   <title>Redirecionando para o WhatsApp...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,6 +32,26 @@
       display: none;
     }
   </style>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '1288649356154285');
+    fbq('track', 'Purchase', {
+      value: 1.00,
+      currency: 'BRL'
+    });
+  </script>
+  <!-- End Meta Pixel Code -->
+
 </head>
 <body>
   <h1>🎊Parabéns pela compra🎊</h1>
@@ -65,25 +60,30 @@
   <div class="check" id="check">✔</div>
 
   <script>
-    // Lista de números de WhatsApp (sem "+" e espaços)
+    // Captura o fbclid salvo no localStorage e injeta no evento via imagem
+    const fbclid = localStorage.getItem('fbclid') || '';
+    const pixelImg = new Image();
+    pixelImg.src = `https://www.facebook.com/tr?id=1288649356154285&ev=Purchase&cd[value]=1.00&cd[currency]=BRL&fbclid=${fbclid}`;
+    pixelImg.style = "display:none";
+    document.body.appendChild(pixelImg);
+  </script>
+
+  <script>
+    // Lista de números ou links (caso queira alternar)
     const numeros = [
-      '5573988023534',
-      
+      '5573988023534'
     ];
 
-    // Recupera o índice atual salvo no navegador (ou começa do 0)
     let indice = localStorage.getItem('indiceNumero');
     indice = indice ? parseInt(indice) : 0;
 
-    // Define o próximo número e salva o novo índice
     const numeroAtual = numeros[indice];
     const proximoIndice = (indice + 1) % numeros.length;
     localStorage.setItem('indiceNumero', proximoIndice);
 
-    // Monta o link do WhatsApp
+    // Redirecionamento
     const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
 
-    // Inicia o contador regressivo
     let segundos = 3;
     const contador = document.getElementById("contador");
     const check = document.getElementById("check");
