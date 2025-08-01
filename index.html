@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecionando para o WhatsApp...</title>
+  <title>Parabéns pela compra!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -60,16 +60,6 @@
   <div class="check" id="check">✔</div>
 
   <script>
-    // Captura o fbclid salvo no localStorage e injeta no evento via imagem
-    const fbclid = localStorage.getItem('fbclid') || '';
-    const pixelImg = new Image();
-    pixelImg.src = `https://www.facebook.com/tr?id=1288649356154285&ev=Purchase&cd[value]=1.00&cd[currency]=BRL&fbclid=${fbclid}`;
-    pixelImg.style = "display:none";
-    document.body.appendChild(pixelImg);
-  </script>
-
-  <script>
-    // Lista de números ou links (caso queira alternar)
     const numeros = [
       '5573988023534'
     ];
@@ -81,7 +71,6 @@
     const proximoIndice = (indice + 1) % numeros.length;
     localStorage.setItem('indiceNumero', proximoIndice);
 
-    // Redirecionamento
     const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
 
     let segundos = 3;
