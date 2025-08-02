@@ -53,7 +53,7 @@
     <img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
   </noscript>
-  </head>
+</head>
 <body>
   <h1>🎊Parabéns pela compra🎊</h1>
   <p>Acesso liberado em...</p>
@@ -65,10 +65,10 @@
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
+      return '';
     }
 
     const fbclid = localStorage.getItem('fbclid') || '';
-    const fbp = getCookie('_fbp');
 
     const bodyData = {
       event_name: 'Purchase',
@@ -77,7 +77,7 @@
       action_source: 'website',
       event_source_url: window.location.href,
       user_data: {
-        fbp: fbp,
+        fbp: getCookie('_fbp'),
         client_user_agent: navigator.userAgent,
       },
       custom_data: {
@@ -86,10 +86,8 @@
       }
     };
 
-    if (fbc && fbc.trim() !== '') {
-      bodyData.fbc = `fb.1.${Math.floor(Date.now() / 1000)}.${fbclid}`;
-    } else if (fbclid && fbclid.trim() !== '') {
-       bodyData.fbclid = fbclid;
+    if (fbclid && fbclid.trim() !== '') {
+      bodyData.fbclid = fbclid;
     }
 
     fetch('https://acebook-conversion-api.onrender.com/purchase', {
