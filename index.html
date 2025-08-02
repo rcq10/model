@@ -1,122 +1,62 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Parabéns pela compra!</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background-color: #075E54;
-      color: #FFFFFF;
-      font-family: 'Segoe UI', 'Roboto', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-    .contador {
-      font-size: 3rem;
-      font-weight: bold;
-      color: #25D366;
-      margin-top: 20px;
-    }
-    .check {
-      font-size: 4rem;
-      color: #25D366;
-      display: none;
-    }
-  </style>
+<script>
+  // Função para pegar o cookie _fbp
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+  }
 
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+  // Função assíncrona para enviar o evento para a CAPI
+  async function sendConversionEvent() {
+    console.log('Tentando enviar evento para a CAPI...');
+    const fbclid = localStorage.getItem('fbclid') || '';
+    const fbp = getCookie('_fbp');
+    
+    // Monta o corpo da requisição exatamente como a API espera
+    const bodyData = {
+      event_source_url: window.location.href,
+      fbp: fbp,
+      fbclid: fbclid,
+      user_agent: navigator.userAgent
+    };
 
-    fbq('init', '1124756639573111');
-    fbq('track', 'Purchase', {
-      value: 1.00,
-      currency: 'BRL'
-    });
-  </script>
-  <noscript>
-    <img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
-  </noscript>
-</head>
-<body>
-  <h1>🎊Parabéns pela compra🎊</h1>
-  <p>Acesso liberado em...</p>
-  <div class="contador" id="contador">3</div>
-  <div class="check" id="check">✔</div>
-
-  <script>
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return '';
-    }
-
-    // A chamada à API de Conversões é a primeira coisa a acontecer.
-    const fbclid = localStorage.getItem('fbclid') || '';
-    const bodyData = {
-      event_name: 'Purchase',
-      event_id: Date.now().toString(),
-      event_time: Math.floor(Date.now() / 1000),
-      action_source: 'website',
-      event_source_url: window.location.href,
-      user_data: {
-        fbp: getCookie('_fbp'),
-        client_user_agent: navigator.userAgent,
-      },
-      custom_data: {
-        currency: 'BRL',
-        value: 1.00
-      }
-    };
-
-    if (fbclid && fbclid.trim() !== '') {
-      bodyData.fbclid = fbclid;
-    }
-
-    fetch('https://acebook-conversion-api.onrender.com/purchase', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(bodyData)
-    });
-
-    // O contador e o redirecionamento vêm depois.
-    const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
-    let segundos = 3;
-    const contador = document.getElementById("contador");
-    const check = document.getElementById("check");
-
-    const interval = setInterval(() => {
-      segundos--;
-      if (segundos > 0) {
-        contador.textContent = segundos;
+    try {
+      // ✅ USANDO A SUA URL EXATA, CONFIRMADA POR VOCÊ
+      const response = await fetch('https://acebook-conversion-api.onrender.com/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+      
+      if (response.ok) {
+        console.log('✅ SUCESSO: Evento enviado para a CAPI.');
       } else {
-        clearInterval(interval);
-        contador.style.display = "none";
-        check.style.display = "block";
-        setTimeout(() => {
-          window.location.href = link;
-        }, 1000);
+        const result = await response.json();
+        console.error('❌ ERRO na API:', result);
       }
-    }, 1000);
-  </script>
-</body>
-</html>
+    } catch (error) {
+      console.error('❌ ERRO DE CONEXÃO (Fetch falhou):', error);
+    }
+  }
+
+  // Executa a função de envio assim que a página carrega
+  sendConversionEvent();
+
+  // Lógica do contador e redirecionamento (continua igual)
+  const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
+  let segundos = 3;
+  const contador = document.getElementById("contador");
+  const check = document.getElementById("check");
+  const interval = setInterval(() => {
+    segundos--;
+    if (segundos > 0) {
+      contador.textContent = segundos;
+    } else {
+      clearInterval(interval);
+      contador.style.display = "none";
+      check.style.display = "block";
+      setTimeout(() => { window.location.href = link; }, 1000);
+    }
+  }, 1000);
+</script>
