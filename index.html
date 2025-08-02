@@ -50,6 +50,10 @@
       currency: 'BRL'
     });
   </script>
+  <noscript>
+    <img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
+  </noscript>
   <!-- End Meta Pixel Code -->
 
 </head>
@@ -60,19 +64,45 @@
   <div class="check" id="check">✔</div>
 
   <script>
-    const numeros = [
-      '5573988023534'
-    ];
-
+    // Roda o redirecionamento
+    const numeros = ['5573988023534'];
     let indice = localStorage.getItem('indiceNumero');
     indice = indice ? parseInt(indice) : 0;
-
     const numeroAtual = numeros[indice];
     const proximoIndice = (indice + 1) % numeros.length;
     localStorage.setItem('indiceNumero', proximoIndice);
 
     const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
 
+    // Disparo via API de Conversão (CAPI)
+    fetch('https://facebook-conversions-api.onrender.com/track', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        event_name: 'Purchase',
+        event_id: Date.now().toString(),
+        event_time: Math.floor(Date.now() / 1000),
+        action_source: 'website',
+        user_data: {
+          fbp: getCookie('_fbp'),
+          client_user_agent: navigator.userAgent,
+        },
+        custom_data: {
+          currency: 'BRL',
+          value: 1.00
+        }
+      })
+    });
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Contador regressivo
     let segundos = 3;
     const contador = document.getElementById("contador");
     const check = document.getElementById("check");
