@@ -33,6 +33,7 @@
     }
   </style>
 
+  <!-- Pixel do Facebook -->
   <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -68,7 +69,9 @@
       return '';
     }
 
-    const fbclid = localStorage.getItem('fbclid') || '';
+    const fbp = getCookie('_fbp');
+    const fbc = getCookie('_fbc');
+    const userAgent = navigator.userAgent;
 
     const bodyData = {
       event_name: 'Purchase',
@@ -77,8 +80,9 @@
       action_source: 'website',
       event_source_url: window.location.href,
       user_data: {
-        fbp: getCookie('_fbp'),
-        client_user_agent: navigator.userAgent,
+        fbp: fbp,
+        fbc: fbc,
+        client_user_agent: userAgent,
       },
       custom_data: {
         currency: 'BRL',
@@ -86,10 +90,7 @@
       }
     };
 
-    if (fbclid && fbclid.trim() !== '') {
-      bodyData.fbclid = fbclid;
-    }
-
+    // Envio para seu servidor (Node.js)
     fetch('https://acebook-conversion-api.onrender.com/purchase', {
       method: 'POST',
       headers: {
@@ -98,6 +99,7 @@
       body: JSON.stringify(bodyData)
     });
 
+    // Redirecionamento após contagem
     const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
     let segundos = 3;
     const contador = document.getElementById("contador");
