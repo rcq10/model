@@ -71,27 +71,33 @@
     // Disparo via API de Conversão (CAPI)
     const fbclid = localStorage.getItem('fbclid') || '';
 
+    const bodyData = {
+      event_name: 'Purchase',
+      event_id: Date.now().toString(),
+      event_time: Math.floor(Date.now() / 1000),
+      action_source: 'website',
+      event_source_url: window.location.href,
+      user_data: {
+        fbp: getCookie('_fbp'),
+        client_user_agent: navigator.userAgent,
+      },
+      custom_data: {
+        currency: 'BRL',
+        value: 1.00
+      }
+    };
+
+    // Adiciona o fbclid ao corpo da requisição apenas se ele existir
+    if (fbclid && fbclid.trim() !== '') {
+      bodyData.fbclid = fbclid;
+    }
+
     fetch('https://acebook-conversion-api.onrender.com/purchase', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        event_name: 'Purchase',
-        event_id: Date.now().toString(),
-        event_time: Math.floor(Date.now() / 1000),
-        action_source: 'website',
-        event_source_url: window.location.href,
-        fbclid: fbclid,
-        user_data: {
-          fbp: getCookie('_fbp'),
-          client_user_agent: navigator.userAgent,
-        },
-        custom_data: {
-          currency: 'BRL',
-          value: 1.00
-        }
-      })
+      body: JSON.stringify(bodyData)
     });
 
     // Roda o redirecionamento
