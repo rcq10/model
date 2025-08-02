@@ -33,7 +33,6 @@
     }
   </style>
 
-  <!-- Pixel do Facebook -->
   <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -69,10 +68,8 @@
       return '';
     }
 
-    const fbp = getCookie('_fbp');
-    const fbc = getCookie('_fbc');
-    const userAgent = navigator.userAgent;
-
+    // A chamada à API de Conversões é a primeira coisa a acontecer.
+    const fbclid = localStorage.getItem('fbclid') || '';
     const bodyData = {
       event_name: 'Purchase',
       event_id: Date.now().toString(),
@@ -80,9 +77,8 @@
       action_source: 'website',
       event_source_url: window.location.href,
       user_data: {
-        fbp: fbp,
-        fbc: fbc,
-        client_user_agent: userAgent,
+        fbp: getCookie('_fbp'),
+        client_user_agent: navigator.userAgent,
       },
       custom_data: {
         currency: 'BRL',
@@ -90,7 +86,10 @@
       }
     };
 
-    // Envio para seu servidor (Node.js)
+    if (fbclid && fbclid.trim() !== '') {
+      bodyData.fbclid = fbclid;
+    }
+
     fetch('https://acebook-conversion-api.onrender.com/purchase', {
       method: 'POST',
       headers: {
@@ -99,7 +98,7 @@
       body: JSON.stringify(bodyData)
     });
 
-    // Redirecionamento após contagem
+    // O contador e o redirecionamento vêm depois.
     const link = `https://drive.google.com/drive/folders/1odDv7WZn3cfsXuPrdklo-dWcPeSch8q2`;
     let segundos = 3;
     const contador = document.getElementById("contador");
