@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -36,24 +35,43 @@
 
   <!-- Pixel do Facebook -->
   <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+    !function(f,b,e,v,n,t,s){
+      if(f.fbq)return;n=f.fbq=function(){
+        n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)
+      };
+      if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];
+      t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)
+    }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
     fbq('init', '1124756639573111');
-    fbq('track', 'Purchase', {
-      value: 1.00,
-      currency: 'BRL'
-    });
+
+    // --- Início da Lógica Anti-Duplicidade ---
+    if (!sessionStorage.getItem('conversionSent')) {
+      console.log('Primeira visita. Registrando conversão...');
+
+      const uniqueEventId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
+
+      fbq('track', 'Purchase',
+        { value: 1.00, currency: 'BRL' },
+        { eventID: uniqueEventId }
+      );
+
+      sendApiEvent(uniqueEventId);
+
+      sessionStorage.setItem('conversionSent', 'true');
+    } else {
+      console.log('Conversão já registrada nesta sessão. Ignorando.');
+    }
+    // --- Fim da Lógica Anti-Duplicidade ---
   </script>
   <noscript>
     <img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
+         src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
   </noscript>
 </head>
 <body>
@@ -79,34 +97,36 @@
       return id;
     }
 
-    const fbp = getCookie('_fbp');
-    const fbc = getCookie('_fbc');
-    const userAgent = navigator.userAgent;
+    function sendApiEvent(eventId) {
+      const fbp = getCookie('_fbp');
+      const fbc = getCookie('_fbc');
+      const userAgent = navigator.userAgent;
 
-    const bodyData = {
-      event_name: 'Purchase',
-      event_id: getEventId(),
-      event_time: Math.floor(Date.now() / 1000),
-      action_source: 'website',
-      event_source_url: window.location.href,
-      user_data: {
-        fbp: fbp,
-        fbc: fbc,
-        client_user_agent: userAgent,
-      },
-      custom_data: {
-        currency: 'BRL',
-        value: 1.00
-      }
-    };
+      const bodyData = {
+        event_name: 'Purchase',
+        event_id: eventId,
+        event_time: Math.floor(Date.now() / 1000),
+        action_source: 'website',
+        event_source_url: window.location.href,
+        user_data: {
+          fbp: fbp,
+          fbc: fbc,
+          client_user_agent: userAgent,
+        },
+        custom_data: {
+          currency: 'BRL',
+          value: 1.00
+        }
+      };
 
-    fetch('https://acebook-conversion-api.onrender.com/purchase', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(bodyData)
-    });
+      fetch('https://acebook-conversion-api.onrender.com/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+      });
+    }
 
     const link = `https://drive.google.com/drive/folders/1hC3uPxyfLUj3OxIwHwUU21SCXCJNDZRq?usp=drive_link`;
     let segundos = 3;
