@@ -50,37 +50,13 @@
 
     fbq('init', '1124756639573111');
 
-    // --- Início da Lógica Anti-Duplicidade ---
-    if (!sessionStorage.getItem('conversionSent')) {
-      console.log('Primeira visita. Registrando conversão...');
-
-      const uniqueEventId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
-
-      fbq('track', 'Purchase',
-        { value: 1.00, currency: 'BRL' },
-        { eventID: uniqueEventId }
-      );
-
-      sendApiEvent(uniqueEventId);
-
-      sessionStorage.setItem('conversionSent', 'true');
-    } else {
-      console.log('Conversão já registrada nesta sessão. Ignorando.');
+    // Funções auxiliares
+    function getValorCompra() {
+      const params = new URLSearchParams(window.location.search);
+      const valor = parseFloat(params.get("valor"));
+      return isNaN(valor) ? 1.00 : valor;
     }
-    // --- Fim da Lógica Anti-Duplicidade ---
-  </script>
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
-  </noscript>
-</head>
-<body>
-  <h1>🎊Parabéns pela compra🎊</h1>
-  <p>Acesso liberado em...</p>
-  <div class="contador" id="contador">3</div>
-  <div class="check" id="check">✔</div>
 
-  <script>
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -88,16 +64,7 @@
       return '';
     }
 
-    function getEventId() {
-      let id = sessionStorage.getItem('event_id');
-      if (!id) {
-        id = Date.now().toString();
-        sessionStorage.setItem('event_id', id);
-      }
-      return id;
-    }
-
-    function sendApiEvent(eventId) {
+    function sendApiEvent(eventId, valor) {
       const fbp = getCookie('_fbp');
       const fbc = getCookie('_fbc');
       const userAgent = navigator.userAgent;
@@ -115,7 +82,7 @@
         },
         custom_data: {
           currency: 'BRL',
-          value: 1.00
+          value: valor
         }
       };
 
@@ -128,6 +95,40 @@
       });
     }
 
+    // --- Lógica Anti-Duplicidade com event_id compartilhado ---
+    if (!sessionStorage.getItem('conversionSent')) {
+      console.log('Primeira visita. Registrando conversão...');
+
+      const valorCompra = getValorCompra();
+      const uniqueEventId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
+
+      fbq('track', 'Purchase',
+        { value: valorCompra, currency: 'BRL' },
+        { eventID: uniqueEventId }
+      );
+
+      sendApiEvent(uniqueEventId, valorCompra);
+
+      sessionStorage.setItem('conversionSent', 'true');
+    } else {
+      console.log('Conversão já registrada nesta sessão. Ignorando.');
+    }
+    // --- Fim da Lógica Anti-Duplicidade ---
+  </script>
+
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=1124756639573111&ev=PageView&noscript=1"/>
+  </noscript>
+</head>
+
+<body>
+  <h1>🎊Parabéns pela compra🎊</h1>
+  <p>Acesso liberado em...</p>
+  <div class="contador" id="contador">3</div>
+  <div class="check" id="check">✔</div>
+
+  <script>
     const link = `https://drive.google.com/drive/folders/1hC3uPxyfLUj3OxIwHwUU21SCXCJNDZRq?usp=drive_link`;
     let segundos = 3;
     const contador = document.getElementById("contador");
