@@ -42,8 +42,7 @@
       };
       if(!f._fbq)f._fbq=n;
       n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];
-      t=b.createElement(e);t.async=!0;
+      n.queue=[];t=b.createElement(e);t.async=!0;
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)
     }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
@@ -64,26 +63,9 @@
       return '';
     }
 
-    function setCookie(name, value, days = 90) {
-      const expires = new Date(Date.now() + days * 864e5).toUTCString();
-      document.cookie = `${name}=${value}; expires=${expires}; path=/`;
-    }
-
-    function ensureFbc() {
-      let fbc = getCookie('_fbc');
-      if (!fbc) {
-        const fbclid = new URLSearchParams(window.location.search).get('fbclid');
-        if (fbclid) {
-          fbc = `fb.1.${Date.now()}.${fbclid}`;
-          setCookie('_fbc', fbc);
-        }
-      }
-      return fbc;
-    }
-
     function sendApiEvent(eventId, valor) {
       const fbp = getCookie('_fbp');
-      const fbc = ensureFbc();
+      const fbc = getCookie('_fbc');
       const userAgent = navigator.userAgent;
 
       const bodyData = {
@@ -96,8 +78,6 @@
           fbp: fbp,
           fbc: fbc,
           client_user_agent: userAgent,
-          client_ip_address: '', // opcional (servidor pode preencher)
-          client_language: navigator.language || ''
         },
         custom_data: {
           currency: 'BRL',
@@ -114,10 +94,11 @@
       });
     }
 
-    // --- Lógica Anti-Duplicidade com event_id compartilhado ---
-    if (!sessionStorage.getItem('conversionSent')) {
-      console.log('Primeira visita. Registrando conversão...');
+    // --- Lógica Anti-Duplicidade com event_id persistente ---
+    const sessionKey = 'conversionData';
+    let conversionData = sessionStorage.getItem(sessionKey);
 
+    if (!conversionData) {
       const valorCompra = getValorCompra();
       const uniqueEventId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
 
@@ -128,7 +109,10 @@
 
       sendApiEvent(uniqueEventId, valorCompra);
 
-      sessionStorage.setItem('conversionSent', 'true');
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        sent: true,
+        event_id: uniqueEventId
+      }));
     } else {
       console.log('Conversão já registrada nesta sessão. Ignorando.');
     }
