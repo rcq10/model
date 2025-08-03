@@ -37,8 +37,8 @@
   <script>
     !function(f,b,e,v,n,t,s){
       if(f.fbq)return;n=f.fbq=function(){
-        n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)
+        n.callMethod ?
+        n.callMethod.apply(n,arguments) : n.queue.push(arguments)
       };
       if(!f._fbq)f._fbq=n;
       n.push=n;n.loaded=!0;n.version='2.0';
@@ -49,7 +49,6 @@
 
     fbq('init', '1124756639573111');
 
-    // Funções auxiliares
     function getValorCompra() {
       const params = new URLSearchParams(window.location.search);
       const valor = parseFloat(params.get("valor"));
@@ -94,12 +93,13 @@
       });
     }
 
-    // --- Lógica Anti-Duplicidade com event_id persistente ---
+    // --- Lógica Anti-Duplicidade com cookie + sessionStorage ---
+    const valorCompra = getValorCompra();
     const sessionKey = 'conversionData';
-    let conversionData = sessionStorage.getItem(sessionKey);
+    let sessionData = sessionStorage.getItem(sessionKey);
+    const alreadySent = document.cookie.includes('conversionSent=true');
 
-    if (!conversionData) {
-      const valorCompra = getValorCompra();
+    if (!sessionData && !alreadySent) {
       const uniqueEventId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
 
       fbq('track', 'Purchase',
@@ -113,10 +113,12 @@
         sent: true,
         event_id: uniqueEventId
       }));
+
+      document.cookie = 'conversionSent=true; max-age=3600; path=/'; // Cookie por 1 hora
     } else {
-      console.log('Conversão já registrada nesta sessão. Ignorando.');
+      console.log('Conversão já registrada nesta sessão ou cookie. Ignorando.');
     }
-    // --- Fim da Lógica Anti-Duplicidade ---
+    // --- Fim da lógica anti-duplicidade ---
   </script>
 
   <noscript>
