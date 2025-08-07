@@ -49,6 +49,20 @@
 
     fbq('init', '1124756639573111');
 
+    // ✅ Lógica adicionada para restaurar _fbc do localStorage
+    (function ensureFbcCookie() {
+      const hasFbc = document.cookie.includes('_fbc=');
+      if (!hasFbc) {
+        const fbclid = localStorage.getItem('fbclid');
+        if (fbclid) {
+          const timestamp = Math.floor(Date.now() / 1000);
+          const fbcValue = `fb.1.${timestamp}.${fbclid}`;
+          document.cookie = `_fbc=${fbcValue}; path=/; domain=${location.hostname}; SameSite=Lax`;
+          console.log('✅ Cookie _fbc recriado a partir do localStorage.');
+        }
+      }
+    })();
+
     function getValorCompra() {
       const params = new URLSearchParams(window.location.search);
       const valor = parseFloat(params.get("valor"));
