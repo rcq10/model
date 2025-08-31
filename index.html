@@ -146,7 +146,7 @@
                         </div>
                     </div>
                     
-                    <div class="ml-10">
+                    <div class="ml-10 text-right">
                         <button onclick="nextStep()" class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50" disabled id="btnStep1">
                             Próxima pergunta <i class="fas fa-arrow-right ml-2"></i>
                         </button>
@@ -178,10 +178,7 @@
                         </div>
                     </div>
                     
-                    <div class="ml-10 flex justify-between">
-                        <button onclick="prevStep()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition duration-300">
-                            <i class="fas fa-arrow-left mr-2"></i> Voltar
-                        </button>
+                    <div class="ml-10 flex justify-end">
                         <button onclick="nextStep()" class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50" disabled id="btnStep2">
                             Próxima pergunta <i class="fas fa-arrow-right ml-2"></i>
                         </button>
@@ -209,10 +206,7 @@
                         </div>
                     </div>
                     
-                    <div class="ml-10 flex justify-between">
-                        <button onclick="prevStep()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition duration-300">
-                            <i class="fas fa-arrow-left mr-2"></i> Voltar
-                        </button>
+                    <div class="ml-10 flex justify-end">
                         <button onclick="nextStep()" class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50" disabled id="btnStep3">
                             Próxima pergunta <i class="fas fa-arrow-right ml-2"></i>
                         </button>
@@ -251,7 +245,8 @@
                     </div>
                     
                     <div id="customValueContainer" class="ml-10 mb-6 hidden">
-                        <input type="number" id="customValue" class="w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Digite o valor desejado">
+                        <input type="number" id="customValue" max="100000" class="w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Digite o valor desejado">
+                        <p class="text-xs text-gray-500 mt-2">O valor máximo é de R$ 100.000.</p>
                     </div>
                     
                     <div class="ml-10 mb-6">
@@ -262,10 +257,7 @@
                     </div>
                      <p id="submitError" class="text-danger text-center text-sm my-4 hidden ml-10"><i class="fas fa-exclamation-circle mr-1"></i></p>
                     
-                    <div class="ml-10 flex justify-between">
-                        <button onclick="prevStep()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg transition duration-300">
-                            <i class="fas fa-arrow-left mr-2"></i> Voltar
-                        </button>
+                    <div class="ml-10 flex justify-end">
                         <button onclick="submitQuiz()" class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50" disabled id="btnStep4">
                             Finalizar <i class="fas fa-check ml-2"></i>
                         </button>
@@ -398,13 +390,6 @@
             updateProgressBar();
         }
         
-        function prevStep() {
-            $(`#step${currentStep}`).addClass('hidden');
-            currentStep--;
-            $(`#step${currentStep}`).removeClass('hidden').addClass('fade-in');
-            updateProgressBar();
-        }
-        
         function updateProgressBar() {
             const progress = (currentStep / 4) * 100;
             $('#progressBar').css('width', `${progress}%`);
@@ -440,12 +425,14 @@
         
         function validateStep4() {
             const customValue = $('#customValue').val();
-            const isValid = customValue > 0;
+            const isValid = customValue > 0 && customValue <= 100000;
             $('#btnStep4').prop('disabled', !isValid);
             
             if (isValid) {
                 selectedValue = parseFloat(customValue);
                  $('#feedback4').removeClass('hidden');
+            } else {
+                 $('#feedback4').addClass('hidden');
             }
         }
         
@@ -546,13 +533,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
 
