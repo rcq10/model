@@ -75,73 +75,38 @@
 
     <script>
         (function() {
-            // --- CONFIGURAÇÃO ---
-            // Adicione seus números de WhatsApp aqui, apenas os números com código do país.
-            const whatsappNumbers = [
-                '5573991352953', // Exemplo 1: São Paulo
-                '5573991352953', // Exemplo 2: Rio de Janeiro
-            ];
+            // URL de destino (sua página principal com o formulário)
+            const redirectUrl = 'https://ag3026.github.io/Agilsolucoes/';
 
-            // Mensagem opcional que será pré-preenchida no WhatsApp. Deixe em branco se não quiser nenhuma.
-            const message = "Olá! Quero comprar seus conteudo.";
+            let secondsLeft = 5;
+            const countdownElement = document.getElementById('countdown-timer');
+            const manualRedirectBtn = document.getElementById('manual-redirect-btn');
 
-            // Tempo de espera em segundos
-            const redirectTime = 2;
-            // --------------------
-
-            // Lógica de seleção sequencial
-            function getNextNumber() {
-                let lastIndex = localStorage.getItem('lastWhatsappIndex');
-                let nextIndex;
-
-                if (lastIndex === null) {
-                    // Se for a primeira vez, usa o primeiro número
-                    nextIndex = 0;
-                } else {
-                    // Pega o próximo índice
-                    nextIndex = parseInt(lastIndex) + 1;
-                }
-
-                // Se o índice passar do tamanho da lista, volta para o início (ciclo)
-                if (nextIndex >= whatsappNumbers.length) {
-                    nextIndex = 0;
-                }
-
-                // Salva o novo índice para a próxima visita
-                localStorage.setItem('lastWhatsappIndex', nextIndex);
-
-                return whatsappNumbers[nextIndex];
-            }
-
-            // Função de redirecionamento
-            function redirect() {
-                const selectedNumber = getNextNumber();
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://wa.me/${selectedNumber}?text=${encodedMessage}`;
-                
-                // Redireciona o usuário
-                window.location.href = whatsappUrl;
-            }
-
-            // Lógica do contador visual
-            const countdownElement = document.getElementById('countdown');
-            let secondsLeft = redirectTime;
-
-            const countdownInterval = setInterval(() => {
+            // Atualiza o contador na tela a cada segundo
+            const interval = setInterval(() => {
                 secondsLeft--;
-                countdownElement.textContent = secondsLeft;
+                if (countdownElement) {
+                    countdownElement.textContent = secondsLeft > 0 ? secondsLeft : 0;
+                }
 
+                // Quando o tempo acabar, tenta redirecionar
                 if (secondsLeft <= 0) {
-                    clearInterval(countdownInterval);
+                    clearInterval(interval);
+                    window.location.href = redirectUrl;
+
+                    // Se o redirecionamento automático falhar, mostra o botão após um breve momento
+                    setTimeout(() => {
+                        if (manualRedirectBtn) {
+                            manualRedirectBtn.classList.remove('hidden');
+                        }
+                    }, 750); // Mostra o botão após 750ms se o redirect não funcionar
                 }
             }, 1000);
-
-            // Inicia o temporizador para o redirecionamento
-            setTimeout(redirect, redirectTime * 1000);
         })();
     </script>
 
 </body>
 
 </html>
+
 
